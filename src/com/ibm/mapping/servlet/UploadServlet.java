@@ -35,23 +35,13 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import com.ibm.mapping.ec.RecreatorMain;
-import com.ibm.mapping.qa.KHQualityTool;
-import com.ibm.mapping.qc.QC_Tester;
 import com.ibm.mapping.service.DataService;
 import com.ibm.mapping.service.DataServiceImpl;
-import com.ibm.mapping.util.CodeListCreator;
-import com.ibm.mapping.util.EmptyTag;
-import com.ibm.mapping.util.FileTester;
 import com.ibm.mapping.util.FileUtils;
 import com.ibm.mapping.util.ReportGenerator;
-import com.ibm.mapping.util.TransmitFile;
 import com.ibm.mapping.util.UnzipFile;
 import com.ibm.mapping.util.ZipDirectory;
-import com.ibm.mapping.util.codelistMerger;
-import com.ibm.mapping.util.createXSD;
-import com.ibm.mapping.util.mxlTagUpdater;
 import com.ibm.mapping.util.validateSheet;
-import com.ibm.mapping.util.GentranToolC;
 
 /**
  * 
@@ -95,11 +85,11 @@ public class UploadServlet extends HttpServlet implements Constants {
 
 		HttpSession session = request.getSession();
 		session.setMaxInactiveInterval(30 * 60);
-
+		System.out.println(request);
 		String usageType = request.getParameter("usageType");
 		
-		String groupName = session.getAttribute("groupName").toString();
-	    //System.out.println("In upload servlet: Group Name" + groupName);
+		String groupName = "RSC_B2B";//session.getAttribute("groupName").toString();
+	    System.out.println("In upload servlet: Group Name" + groupName);
 
 		String selectedValue = request.getParameter("selectedValue");
 		String reportName = request.getParameter("reportName");
@@ -318,48 +308,6 @@ public class UploadServlet extends HttpServlet implements Constants {
 				ReportGenerator.exceuteMap(inputDirectoryName,OUTPUT_DIRECTORY_NAME, utilxslFile);
 				// utilxslFile = "C:\\resource\\AccumUtility.xsl";
 				deletedFiles = FileUtils.deletedFileList(inputDirectoryName);
-			} else if (reportName.equals("codeList")) {
-				utilxslFile = CODELIST_XSL;
-				ReportGenerator.exceuteMap(inputDirectoryName,OUTPUT_DIRECTORY_NAME, utilxslFile);
-				// utilxslFile ="C:\\resource\\CodeListUtility.xsl";
-				uId = "U07";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName);
-
-			} else if (reportName.equals("mapfunctions")) {
-				ReportGenerator.updateMap(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("fieldMinsToZero"),request.getParameter("removeAllConditionalRules"),request.getParameter("setAllStringsToFreeFormat"),request.getParameter("setAllTagsToLen7"),request.getParameter("setCharacterEncodingsToUTF8"));
-				// utilxslFile ="C:\\resource\\CodeListUtility.xsl";
-				uId = "U07";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName);
-
-			} else if (reportName.equals("error20001")) {
-				uId = "U03";
-				
-				//utilxslFile = ERRROR_20001_XSL;
-				// utilxslFile = "C:\\resource\\Error20001Report.xsl";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName);
-				try {
-				isCorrectData = ReportGenerator.generate_Error20001Report(inputDirectoryName, OUTPUT_DIRECTORY_NAME);
-				} catch (ParserConfigurationException | SAXException | TransformerFactoryConfigurationError
-						| TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if (reportName.equals("xmlSplitter")) {
-				uId = "U02";
-				deletedFiles = FileUtils.deleteFileList(inputDirectoryName, ".dat");
-				ReportGenerator.generateFiles(inputDirectoryName,
-						OUTPUT_DIRECTORY_NAME);
-			} else if (reportName.equals("downgrade")) {
-				uId = "U10";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName);
-				ReportGenerator.downgradeMap(inputDirectoryName,
-						OUTPUT_DIRECTORY_NAME);
-			} else if (reportName.equals("ddfgenerate")) {
-				uId = "U11";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,
-						reportName);
-				ReportGenerator.generateDDF(inputDirectoryName,
-						OUTPUT_DIRECTORY_NAME);
 			} else if (reportName.equals("mrsgenerator")) {    
 				uId = "U13";
 				String utilInputxsl = MRSGENERATOR_INPUTXSL;
@@ -374,96 +322,8 @@ public class UploadServlet extends HttpServlet implements Constants {
 				if(mapName!=null || fileName!=null) {
 				ReportGenerator.generateMRS(inputDirectoryName,OUTPUT_DIRECTORY_NAME, utilInputxsl, utilOutputxsl,utilMetaxsl, excludeflddef, includeinactivefld, request.getParameter("usageType"));
 				}
-			} else if(reportName.equals("codelistcreate")) {
-				uId = "U14";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"codelistcreate");
-			    CodeListCreator.generateCodeList(inputDirectoryName, OUTPUT_DIRECTORY_NAME);
-			} else if(reportName.equals("codelistmerge")) {                                            
-				uId = "U16";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"codelistmerge");
-				codelistMerger.generate_MergeCodeList(inputDirectoryName, OUTPUT_DIRECTORY_NAME);
-			} else if(reportName.equals("idoctagUpdater")) {                                           
-				uId = "U15";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"idoctagUpdater");
-				mxlTagUpdater.updateMXLTags(inputDirectoryName,OUTPUT_DIRECTORY_NAME);
-			} else if(reportName.equals("xsdcreate")) {                                                
-				uId = "U17";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"xsdcreate");
-				createXSD.generateSchema(inputDirectoryName,OUTPUT_DIRECTORY_NAME);
-			} else if(reportName.equals("multiplefiletester")) {                                      
-				uId = "U18";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"multiplefiletester");
-				FileTester.generateTestData(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("serverURL"),request.getParameter("uname"),request.getParameter("pwd"),request.getParameter("usageType"));
-			} else if(reportName.equals("empty_tag_generator")) {                                      
-				uId = "U19";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"empty_tag_generator");
-				EmptyTag.generate_EmptyTag(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("tagType"));
 			}
-			else if(reportName.equals("qc_tool")) {                                      
-				uId = "U20";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"qc_tool");
-				//System.out.println("selectedValue=>"+selectedValue);
-				
-				// if both ticket numbers are equal
-				if(!selectedValue.equals(ticketNo)) {
-				//System.out.println("Ticket numbers are different");	
-				// Check if output directory exists.
-		  		File outputDir = new File(OUTPUT_DIRECTORY_NAME);
-
-		  		if (!outputDir.exists()) {
-		  			// Create a output directory.
-		  			outputDir.mkdirs();
-		  		}
-		  		FileUtils.cleanDirectory(outputDir);
-				}
-				else
-				isQCPassed = QC_Tester.generateQCReport(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("requestType"),session.getAttribute("email").toString(),request.getParameter("gsa_id"),request.getParameter("gsa_pwd"),isTxoLatest);
-			}  
-			else if(reportName.equals("envelope_creator")) {                                      
-				uId = "U21";
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"envelope_creator");
-				RecreatorMain.createEnvelope(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("envType"));
-			}
-			else if(reportName.equals("gentran_migration_tool")) {                                      
-				uId = "U22";
-				//System.out.println("Encoding: "+request.getParameter("encoding"));
-				//System.out.println("Presession Name: "+request.getParameter("PresessionName"));
-				//System.out.println("Delimiter 1: "+request.getParameter("delimiter_1"));
-				//System.out.println("Delimiter 2: "+request.getParameter("delimiter_2"));
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"gentran_migration_tool");
-				GentranToolC.generateSI_MAP(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("encoding"),request.getParameter("PresessionName"),request.getParameter("delimiter_1"),request.getParameter("delimiter_2"));
-				//EmptyTag.generate_EmptyTag(inputDirectoryName,OUTPUT_DIRECTORY_NAME,request.getParameter("tagType"));
-			} else if(reportName.equals("qa_tool")) { 
-				//System.out.println("qa tool");
-				uId = "U24";
-				File outputDir = new File(OUTPUT_DIRECTORY_NAME);
-				if (!outputDir.exists()) {
-		  			// Create a output directory.
-		  			outputDir.mkdirs();
-		  		}
-		  		FileUtils.cleanDirectory(outputDir);
-				deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"qa_tool");
-				if(inputDir.size() > 0 && inputDirSize.size() > 0) {
-				for(int i=0;i<inputDir.size();i++) {
-				//System.out.println("*** " + (i+1) + " "+inputDir.get(i));
-				String path=KHQualityTool.validate_WP_For_QA(inputDirectoryName+File.separator+inputDir.get(i),OUTPUT_DIRECTORY_NAME+File.separator+inputDir.get(i),request.getParameter("projectType"));
-				ZipDirectory.zipIn(path);
-				File childDir = new File(path);
-				if(childDir.exists() && childDir.isDirectory()) {
-				final File[] files = childDir.listFiles();
-				for(int j=0;j<files.length;j++)
-				files[j].delete();
-				}
-				if(childDir.exists() && childDir.isDirectory())
-				childDir.delete();
-				}
-			  }
-			}else if(reportName.equals("file_transmission")) {
-				//System.out.println("file_transmission");
-				uId = "U25";
-				//deletedFiles = FileUtils.deletedFileList(inputDirectoryName,"file_transmission");
-				TransmitFile.upload(request,response,inputDirectoryName,OUTPUT_DIRECTORY_NAME);
-			}/*else {
+			/*else {
 			}
 				ReportGenerator.exceuteMap(inputDirectoryName,OUTPUT_DIRECTORY_NAME, utilxslFile);
 			}*/
@@ -575,8 +435,8 @@ public class UploadServlet extends HttpServlet implements Constants {
 		  }
 		}
 		
-		String user = session.getAttribute("name").toString();
-		String email = session.getAttribute("email").toString();
+		String user = "rajrobin";//session.getAttribute("name").toString();
+		String email = "rajrobin@in.ibm.com";//session.getAttribute("email").toString();
 		String noOfFiles = String.valueOf(UnzipFile.countFilesInDirectory(new File(OUTPUT_DIRECTORY_NAME)));
 		String noOfInputFiles = String.valueOf(input_map.size());
 		String project = null;

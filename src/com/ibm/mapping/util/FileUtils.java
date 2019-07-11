@@ -207,15 +207,6 @@ public final class FileUtils {
 							{
 								files[i].delete();
 								deletedFiles.add(fileName);
-							}else
-							{
-								//check valid xml
-								if(!CodeListCreator.isValidXml(files[i]))
-								{
-									files[i].delete();
-									deletedFiles.add(fileName);
-								}
-								
 							}
 						}
 					} else if (reportType.equals("idoctagUpdater")

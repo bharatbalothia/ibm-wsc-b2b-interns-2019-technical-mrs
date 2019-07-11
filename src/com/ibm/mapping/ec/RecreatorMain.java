@@ -17,7 +17,6 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 
 import com.ibm.mapping.servlet.Constants;
-import com.ibm.mapping.util.FileTester;
 import com.ibm.mapping.util.FileUtils;
 
 public class RecreatorMain {

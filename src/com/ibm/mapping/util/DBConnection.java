@@ -100,7 +100,7 @@ public class DBConnection {
 		System.out.println(data.get(i).replace("0188_L_", ""));
 		}*/
 		/*
-		 * String user = "Pradeep P"; String email = "pradeep_p_131@in.ibm.com";
+		 * String user = "Manjit"; String email = "smanjit@in.ibm.com";
 		 * String UID = "U01"; int ticket = 1234878; String project = "ALC";
 		 * String NOOFfiles = "6";
 		 * 

@@ -1,11 +1,11 @@
 <jsp:include page="header.jsp" />
 
 <body>
-	<%
-		if (session.getAttribute("name") == null) {
+	  <%
+		/*if (session.getAttribute("name") == null) {
 			request.getRequestDispatcher("login.jsp").forward(request,
 					response);
-		}
+		}*/
 	%>
 	<div id="wrapper">
 		<div id="page">
